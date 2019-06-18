@@ -45,7 +45,7 @@ public class Iluminacao {
 			bw.write("SALA_INTEL\n");
 			bw.write("TYPE: SISTEMA_ILUMINACAO\n");
 			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Character.SIZE + "\n");
+			bw.write("LEN: " + Character.BYTES + "\n");
 			bw.write("ACTION: " + action + "\n" );
 			bw.write(result + "\n");
 			

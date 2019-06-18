@@ -45,7 +45,7 @@ public class Leitor {
 			bw.write("TYPE: LEITOR_CARTAO\n");
 			bw.write("ID: " + id++ + "\n");
 			//TODO pq era 128?
-			bw.write("LEN: " + (nusp.getBytes().length + name.getBytes().length) + "\n");
+			bw.write("LEN: " + (nusp.length() + name.length()) * Character.BYTES + "\n");
 			bw.write("ACTION: READ\n");
 			bw.write(nusp + " " + name);
 			closeBuffers();
