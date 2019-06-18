@@ -2,28 +2,23 @@ package main;
 
 import java.util.Scanner;
 
+import console.Console;
 import chave.Chave;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Scanner s = new Scanner(System.in);
+		Console console = Console.getInstance();
 		Chave chave = new Chave();
 		while (true) {
-		
-			System.out.println("1 - connect\n2 - send status");
-			int read = s.nextInt();
+			
+			int read = console.readInt("1 - connect\n2 - send status");
 			
 			if (read == 1) {
 				//TODO if is connected continue
-				System.out.println("Server IP:");
-				s.nextLine();
-				chave.setServer(s.nextLine());
-				chave.connect();
+				chave.setServer(console.readString("Server IP: "));
 			} else if (read == 2) {
-				System.out.println("Status (ON/OFF):");
-				s.nextLine();
-				chave.sendStatus(s.nextLine());
+				chave.sendStatus(console.readString("Status (ON/OFF):"));
 			}
 		}
 	}

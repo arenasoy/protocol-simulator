@@ -1,8 +1,11 @@
 package leitor;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Leitor {
 	private String server;
@@ -15,29 +18,29 @@ public class Leitor {
 	public void connect() {
 		try {
 			System.out.println("connecting to " + server);
-			socket = new Socket(server, port);
-			osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-			bw = new BufferedWriter(osw);
+			startBuffers();
 			bw.write("SALA_INTEL\n");
 			bw.write("TYPE: LEITOR_CARTAO\n");
 			bw.write("ID: " + id++ + "\n");
 			bw.write("LEN: " + 0 + "\n");
 			bw.write("ACTION: CONNECT\n");
 			
-			bw.flush();
-			bw.close();
-			osw.close();
-			//socket.close();
+			closeBuffers();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	private void startBuffers() throws UnknownHostException, IOException,
+			UnsupportedEncodingException {
+		socket = new Socket(server, port);
+		osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+		bw = new BufferedWriter(osw);
+	}
 	
 	public void sendRead(String nusp, String name) {
 		try {
-			socket = new Socket(server, port);
-			osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-			bw = new BufferedWriter(osw);
+			startBuffers();
 			bw.write("SALA_INTEL\n");
 			bw.write("TYPE: LEITOR_CARTAO\n");
 			bw.write("ID: " + id++ + "\n");
@@ -45,12 +48,17 @@ public class Leitor {
 			bw.write("LEN: " + (nusp.getBytes().length + name.getBytes().length) + "\n");
 			bw.write("ACTION: READ\n");
 			bw.write(nusp + " " + name);
-			bw.flush();
-			bw.close();
-			osw.close();
+			closeBuffers();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void closeBuffers() throws IOException {
+		bw.flush();
+		bw.close();
+		osw.close();
+		socket.close();
 	}
 
 	public String getServer() {

@@ -1,8 +1,11 @@
 package sistema;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Iluminacao {
 	
@@ -16,29 +19,29 @@ public class Iluminacao {
 	public void connect() {
 		try {
 			System.out.println("connecting to " + server);
-			socket = new Socket(server, port);
-			osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-			bw = new BufferedWriter(osw);
+			startBuffers();
 			bw.write("SALA_INTEL\n");
 			bw.write("TYPE: SISTEMA_ILUMINACAO\n");
 			bw.write("ID: " + id++ + "\n");
 			bw.write("LEN: " + 0 + "\n");
 			bw.write("ACTION: CONNECT\n");
 			
-			bw.flush();
-			bw.close();
-			osw.close();
-			socket.close();
+			closeBuffers();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	private void startBuffers() throws UnknownHostException, IOException,
+			UnsupportedEncodingException {
+		socket = new Socket(server, port);
+		osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+		bw = new BufferedWriter(osw);
+	}
 	
 	public void answerChange(String action, char result) {
 		try {
-			socket = new Socket(server, port);
-			osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-			bw = new BufferedWriter(osw);
+			startBuffers();
 			bw.write("SALA_INTEL\n");
 			bw.write("TYPE: SISTEMA_ILUMINACAO\n");
 			bw.write("ID: " + id++ + "\n");
@@ -46,13 +49,17 @@ public class Iluminacao {
 			bw.write("ACTION: " + action + "\n" );
 			bw.write(result + "\n");
 			
-			bw.flush();
-			bw.close();
-			osw.close();
-			socket.close();
+			closeBuffers();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void closeBuffers() throws IOException {
+		bw.flush();
+		bw.close();
+		osw.close();
+		socket.close();
 	}
 
 	public String getServer() {
