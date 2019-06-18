@@ -15,7 +15,7 @@ public class Main {
 			int read = s.nextInt();
 			
 			if (read == 1) {
-				//if is connected continue
+				//TODO if is connected continue
 				System.out.println("Server IP:");
 				s.nextLine();
 				chave.setServer(s.nextLine());
