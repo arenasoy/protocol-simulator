@@ -1,115 +1,112 @@
 package alimentador;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 
 public class Alimentador {
 	
-	private String server;
-	private int port = 9000;
-	private int id = 0;
-	private Socket socket;
-	private OutputStreamWriter osw;
-	private BufferedWriter bw;
-	
-	public void connect() {
-		try {
-			System.out.println("connecting to " + server);
-			startBuffers();
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: AR_CONDICIONADO\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + 0 + "\n");
-			bw.write("ACTION: CONNECT\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
+	private String serverAddress;
+	private int serverPort, port;
+	private ServerSocket socket;
+	private InetAddress addr;
+
+	private boolean ligado; // O ar-condicionado tá ligado?
+	private double temperatura; // Temperatura (graus C)
+
+	/**
+	 * Construtor padrão.
+	 *
+	 * @param serverAddress endereço do servidor do gerenciador.
+	 * @param serverPort porta do servidor do gerenciador.
+	 * @param port porta local.
+	 */
+	public Alimentador(String serverAddress, int serverPort, int port) throws IOException, IllegalArgumentException {
+		String message;
+		Socket socket;
+		Message m;
+
+		this.serverAddress = serverAddress;
+		this.serverPort = serverPort;
+		this.port = port;
+
+		this.ligado = false;
+		this.temperatura = 20;
+
+		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
+		message = new Message("AR_CONDICIONADO", "CONNECT", Integer.toString(port)).send(serverAddress, serverPort);
+		m = new Message(message);
+		if(!m.getBody().equals("1")) {
+			throw new IOException("O gerenciador não permitiu a minha conexão!");
+		}
+
+		this.socket = new ServerSocket(this.port);
+		this.addr = Inet4Address.getLocalHost();
+		if(this.addr == null) {
+			this.addr = Inet6Address.getLocalHost();
+		}
+		if(this.addr == null) {
+			this.addr = InetAddress.getLocalHost();
+		}
+		if(this.addr == null) {
+			throw new UnknownHostException();
 		}
 	}
 
-	private void startBuffers() throws UnknownHostException, IOException,
-			UnsupportedEncodingException {
-		socket = new Socket(server, port);
-		osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-		bw = new BufferedWriter(osw);
-	}
-	
-	public void answerChange(String action, char result) {
-		try {
-			startBuffers();
-			
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: AR_CONDICIONADO\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Character.BYTES + "\n");
-			bw.write("ACTION: " + action + "\n" );
-			bw.write(result + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void answerGetTemperature(int temperature) {
-		try {
-			startBuffers();
-			
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: AR_CONDICIONADO\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Integer.BYTES + "\n");
-			bw.write("ACTION: GET_TEMP\n" );
-			bw.write(temperature + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void answerSetTemperature(char result) {
-		try {
-			startBuffers();
-			
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: AR_CONDICIONADO\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Character.BYTES + "\n");
-			bw.write("ACTION: SET_TEMP\n" );
-			bw.write(result + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void closeBuffers() throws IOException {
-		bw.flush();
-		bw.close();
-		osw.close();
-		socket.close();
-	}
-
-	public String getServer() {
-		return server;
-	}
-
-	public void setServer(String server) {
-		this.server = server;
+	public String getHostAddress() {
+		return addr.getHostAddress();
 	}
 
 	public int getPort() {
-		return port;
+		return this.port;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void execute() {
+		Message entrada, saida;
+		Socket s;
+
+		while (true) {
+			try {
+				s = socket.accept();
+				System.out.println("Requisição de: " + s.getLocalAddress() + ":" + s.getLocalPort());
+				entrada = Message.getFromSocket(s);
+				saida = new Message("AR_CONDICIONADO", "", "");
+				switch(entrada.getAction()) {
+					case "ON":
+						this.ligado = true;
+						this.temperatura = 20;
+						saida.setAction("ON");
+						saida.setBody("1");
+						break;
+					case "OFF":
+						this.ligado = false;
+						saida.setAction("OFF");
+						saida.setBody("1");
+						break;
+					case "GET_TEMP":
+						saida.setAction("GET_TEMP");
+						saida.setBody(Double.toString(this.temperatura));
+						break;
+					case "SET_TEMP":
+						saida.setAction("SET_TEMP");
+						if (this.ligado) {
+							try {
+								this.temperatura = Double.parseDouble(entrada.getBody());
+								saida.setBody("1");
+							} catch(NumberFormatException ex) {
+								// Erro: O cara me manda mudar a temperatura mas não manda um double válido de temperatura!
+								saida.setBody("0");
+							}
+						} else {
+							saida.setBody("0"); // Erro: não to ligado, então não tem como alterar a temperatura!
+						}
+						break;
+				}
+			} catch(IOException ex) {
+				System.err.println("Alguém tentou conectar aqui no servidor, mas não deu certo. :(");
+				System.err.println(ex);
+				ex.printStackTrace();
+			}
+		}
 	}
+
 }

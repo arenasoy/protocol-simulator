@@ -1,37 +1,69 @@
 package gerenciador;
 
-import java.net.Inet4Address;
-import java.net.ServerSocket;
-import java.net.Socket;
+
+import java.io.IOException;
+import java.net.*;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class Gerenciador {
 
-	private int port = 9000;
-	private List<Socket> client = new ArrayList<Socket>();
-	
-	@SuppressWarnings("resource")
-	public void execute() {
-		ServerSocket socket = null;
-		
-		try {
-			socket = new ServerSocket(port);
-			System.out.println(Inet4Address.getLocalHost());
-		} catch (Exception e) {
-			e.printStackTrace();
+	private ArrayList<GerenciadorThread> client;
+	private ArrayList<Aluno> listaPresenca;
+	private ServerSocket socket;
+	private InetAddress addr;
+	private int port;
+
+	public Gerenciador() throws IOException {
+		this(9000);
+	}
+
+	public Gerenciador(int port) throws IOException {
+		this.client = new ArrayList<GerenciadorThread>();
+		this.port = port;
+		this.socket = new ServerSocket(this.port);
+		this.addr = Inet4Address.getLocalHost();
+		if(this.addr == null) {
+			this.addr = Inet6Address.getLocalHost();
 		}
-		
+		if(this.addr == null) {
+			this.addr = InetAddress.getLocalHost();
+		}
+		if(this.addr == null) {
+			throw new UnknownHostException();
+		}
+	}
+
+	public String getHostAddress() {
+		return addr.getHostAddress();
+	}
+
+	public int getPort() {
+		return this.port;
+	}
+
+	public void execute() {
+		GerenciadorThread t;
+
 		while (true) {
 			try {
-				Socket s = socket.accept();
-				client.add(s);
-				new GerenciadorThread(s).start();
-				System.out.println("Cliente adicionado: " + s.getLocalAddress().getHostAddress());
-			} catch (Exception e) {
-				e.printStackTrace();
+				t = new GerenciadorThread(socket.accept());
+				client.add(t);
+				System.out.println("Requisição: " + t.getHostAddress() + ":" + t.getPort());
+				t.run();
+			} catch(IOException ex) {
+				System.err.println("Alguém tentou conectar aqui no servidor, mas não deu certo. :(");
+				System.err.println(ex);
+				ex.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Este método a thread cliente chama pra indicar que acabou a requisição do cliente.
+	 */
+	public void disconnected() {
+		;
 	}
 	
 }

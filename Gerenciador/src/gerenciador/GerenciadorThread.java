@@ -1,21 +1,32 @@
 package gerenciador;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 
 public class GerenciadorThread extends Thread {
 
+	protected Gerenciador main;
+	protected InetAddress addr;
 	protected Socket socket;
+	int port;
 
 	public GerenciadorThread(Socket socket) {
 		this.socket = socket;
+		this.addr = socket.getLocalAddress();
+		this.port = socket.getPort();
 	}
-	
-	public void run()
-	{
+
+	public String getHostAddress() {
+		return addr.getHostAddress();
+	}
+
+	public int getPort() {
+		return this.port;
+	}
+
+	@Override
+	public void run() {
 		InputStream is = null;
 		try
 		{
@@ -28,6 +39,11 @@ public class GerenciadorThread extends Thread {
 			{
 				System.out.println(line);
 			}
+			System.out.println(new Message("GERENCIADOR", "CONNECT", "1").toString());
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+			w.write(new Message("GERENCIADOR", "CONNECT", "1").toString());
+			w.flush();
+			socket.shutdownOutput();
 		}
 		catch (IOException e)
 		{
