@@ -61,6 +61,7 @@ public class Alimentador {
 	}
 
 	public void execute() {
+		BufferedWriter outputStream;
 		Message entrada, saida;
 		Socket s;
 
@@ -101,6 +102,10 @@ public class Alimentador {
 						}
 						break;
 				}
+				outputStream = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+				outputStream.write(saida.toString());
+				outputStream.flush();
+				s.close();
 			} catch(IOException ex) {
 				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
 				System.err.println(ex);

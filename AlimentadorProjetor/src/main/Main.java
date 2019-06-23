@@ -20,7 +20,7 @@ public class Main {
 
 		c = Console.getInstance();
 
-		System.out.println("Bem-vinde ao Alimentador do Ar-condicionado.");
+		System.out.println("Bem-vinde ao Alimentador do Projetor.");
 		System.out.println();
 
 		do {
