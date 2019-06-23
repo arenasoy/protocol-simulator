@@ -38,7 +38,7 @@ public class Message {
 	}
 
 	/**
-	 * Cria uma mensagem a partir de um TYPE, ID, ACTION e BODY. O LEN é calculado a partir de BODY.
+	 * Cria uma mensagem a partir de um TYPE, ID, ACTION e BODY. O LEN eh calculado a partir de BODY.
 	 *
 	 * @param type
 	 * @param id
@@ -50,7 +50,7 @@ public class Message {
 	}
 
 	/**
-	 * Cria uma mensagem a partir de um TYPE, ACTION e BODY. O LEN é calculado a partir de BODY e o ID é definido aleatoriamente.
+	 * Cria uma mensagem a partir de um TYPE, ACTION e BODY. O LEN eh calculado a partir de BODY e o ID eh definido aleatoriamente.
 	 *
 	 * @param type
 	 * @param action
@@ -61,7 +61,7 @@ public class Message {
 	}
 
 	/**
-	 * Cria uma mensagem a partir de uma string formatada da maneira de nosso relatório.
+	 * Cria uma mensagem a partir de uma string formatada da maneira de nosso relatorio.
 	 *
 	 * @param fullMessage a string
 	 */
@@ -88,9 +88,9 @@ public class Message {
 	/* Methods */
 
 	/**
-	 * Verifica se uma string pode ser usada para instanciar uma nova mensagem. (é válida de acordo com o nosso relatório?)
+	 * Verifica se uma string pode ser usada para instanciar uma nova mensagem. (eh valida de acordo com o nosso relatorio?)
 	 *
-	 * @param fullMessage a string que será validada
+	 * @param fullMessage a string que sera validada
 	 * @return
 	 */
 	public static boolean valid(String fullMessage) {
@@ -123,10 +123,10 @@ public class Message {
 	}
 
 	/**
-	 * Envia esta instância de Mensagem como socket para um servidor e retorna uma string que é toda a resposta dele pra essa mensagem.
-	 * Idealmente, essa string de resposta também é uma mensagem válida e pode ser instanciada nessa classe.
+	 * Envia esta instancia de Mensagem como socket para um servidor e retorna uma string que eh toda a resposta dele pra essa mensagem.
+	 * Idealmente, essa string de resposta tambem eh uma mensagem valida e pode ser instanciada nessa classe.
 	 *
-	 * @param hostAddr o endereço do servidor
+	 * @param hostAddr o endereco do servidor
 	 * @param hostPort a porta do servidor
 	 * @return a string da mensagem de resposta do servidor
 	 * @throws UnknownHostException
@@ -179,7 +179,7 @@ public class Message {
 	}
 
 	/**
-	 * Retorna essa instância de Mensagem da forma como descrito no nosso relatório em uma string.
+	 * Retorna essa instancia de Mensagem da forma como descrito no nosso relatorio em uma string.
 	 *
 	 * @return a string
 	 */

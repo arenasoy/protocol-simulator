@@ -10,13 +10,13 @@ public class Alimentador {
 	private ServerSocket socket;
 	private InetAddress addr;
 
-	private boolean ligado; // O ar-condicionado tá ligado?
+	private boolean ligado; // O ar-condicionado ta ligado?
 	private double temperatura; // Temperatura (graus C)
 
 	/**
-	 * Construtor padrão.
+	 * Construtor padrao.
 	 *
-	 * @param serverAddress endereço do servidor do gerenciador.
+	 * @param serverAddress endereco do servidor do gerenciador.
 	 * @param serverPort porta do servidor do gerenciador.
 	 * @param port porta local.
 	 */
@@ -36,7 +36,7 @@ public class Alimentador {
 		message = new Message("AR_CONDICIONADO", "CONNECT", Integer.toString(port)).send(serverAddress, serverPort);
 		m = new Message(message);
 		if(!m.getBody().equals("1")) {
-			throw new IOException("O gerenciador não permitiu a minha conexão!");
+			throw new IOException("O gerenciador nao permitiu a minha conexao!");
 		}
 
 		this.socket = new ServerSocket(this.port);
@@ -67,7 +67,7 @@ public class Alimentador {
 		while (true) {
 			try {
 				s = socket.accept();
-				System.out.println("Requisição de: " + s.getLocalAddress() + ":" + s.getLocalPort());
+				System.out.println("Requisicao de: " + s.getLocalAddress() + ":" + s.getLocalPort());
 				entrada = Message.getFromSocket(s);
 				saida = new Message("AR_CONDICIONADO", "", "");
 				switch(entrada.getAction()) {
@@ -93,16 +93,16 @@ public class Alimentador {
 								this.temperatura = Double.parseDouble(entrada.getBody());
 								saida.setBody("1");
 							} catch(NumberFormatException ex) {
-								// Erro: O cara me manda mudar a temperatura mas não manda um double válido de temperatura!
+								// Erro: O cara me manda mudar a temperatura mas nao manda um double valido de temperatura!
 								saida.setBody("0");
 							}
 						} else {
-							saida.setBody("0"); // Erro: não to ligado, então não tem como alterar a temperatura!
+							saida.setBody("0"); // Erro: nao to ligado, entao nao tem como alterar a temperatura!
 						}
 						break;
 				}
 			} catch(IOException ex) {
-				System.err.println("Alguém tentou conectar aqui no servidor, mas não deu certo. :(");
+				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
 				System.err.println(ex);
 				ex.printStackTrace();
 			}

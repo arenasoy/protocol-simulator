@@ -1,116 +1,112 @@
 package alimentador;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 
 public class Alimentador {
-
-	private String server;
-	private int port = 9000;
-	private int id = 0;
-	private Socket socket;
-	private OutputStreamWriter osw;
-	private BufferedWriter bw;
 	
-	public void connect() {
-		try {
-			System.out.println("connecting to " + server);
-			startBuffers();
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: PROJETOR\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + 0 + "\n");
-			bw.write("ACTION: CONNECT\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
+	private String serverAddress;
+	private int serverPort, port;
+	private ServerSocket socket;
+	private InetAddress addr;
+
+	private boolean ligado; // O projetor ta ligado?
+	private int screen; // tela atual
+
+	/**
+	 * Construtor padrao.
+	 *
+	 * @param serverAddress endereco do servidor do gerenciador.
+	 * @param serverPort porta do servidor do gerenciador.
+	 * @param port porta local.
+	 */
+	public Alimentador(String serverAddress, int serverPort, int port) throws IOException, IllegalArgumentException {
+		String message;
+		Socket socket;
+		Message m;
+
+		this.serverAddress = serverAddress;
+		this.serverPort = serverPort;
+		this.port = port;
+
+		this.ligado = false;
+		this.screen = 1;
+
+		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
+		message = new Message("PROJETOR", "CONNECT", Integer.toString(port)).send(serverAddress, serverPort);
+		m = new Message(message);
+		if(!m.getBody().equals("1")) {
+			throw new IOException("O gerenciador nao permitiu a minha conexao!");
+		}
+
+		this.socket = new ServerSocket(this.port);
+		this.addr = Inet4Address.getLocalHost();
+		if(this.addr == null) {
+			this.addr = Inet6Address.getLocalHost();
+		}
+		if(this.addr == null) {
+			this.addr = InetAddress.getLocalHost();
+		}
+		if(this.addr == null) {
+			throw new UnknownHostException();
 		}
 	}
 
-	private void startBuffers() throws UnknownHostException, IOException,
-			UnsupportedEncodingException {
-		socket = new Socket(server, port);
-		osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-		bw = new BufferedWriter(osw);
-	}
-	
-	public void answerChange(String action, char result) {
-		try {
-			startBuffers();
-			
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: PROJETOR\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Character.BYTES + "\n");
-			bw.write("ACTION: " + action + "\n" );
-			bw.write(result + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void answerGetScreen(int screen) {
-		try {
-			startBuffers();
-			
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: PROJETOR\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Integer.BYTES + "\n");
-			bw.write("ACTION: GET_SCREEN\n" );
-			bw.write(screen + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void answerSetScreen(char result) {
-		try {
-			startBuffers();
-			
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: PROJETOR\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Character.BYTES + "\n");
-			bw.write("ACTION: SET_SCREEN\n" );
-			bw.write(result + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void closeBuffers() throws IOException {
-		bw.flush();
-		bw.close();
-		osw.close();
-		socket.close();
-	}
-
-	public String getServer() {
-		return server;
-	}
-
-	public void setServer(String server) {
-		this.server = server;
+	public String getHostAddress() {
+		return addr.getHostAddress();
 	}
 
 	public int getPort() {
-		return port;
+		return this.port;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void execute() {
+		Message entrada, saida;
+		Socket s;
+
+		while (true) {
+			try {
+				s = socket.accept();
+				System.out.println("Requisicao de: " + s.getLocalAddress() + ":" + s.getLocalPort());
+				entrada = Message.getFromSocket(s);
+				saida = new Message("PROJETOR", "", "");
+				switch(entrada.getAction()) {
+					case "ON":
+						this.ligado = true;
+						this.screen = 1;
+						saida.setAction("ON");
+						saida.setBody("1");
+						break;
+					case "OFF":
+						this.ligado = false;
+						saida.setAction("OFF");
+						saida.setBody("1");
+						break;
+					case "GET_SCREEN":
+						saida.setAction("GET_SCREEN");
+						saida.setBody(Integer.toString(this.screen));
+						break;
+					case "SET_SCREEN":
+						saida.setAction("SET_SCREEN");
+						if (this.ligado) {
+							try {
+								this.screen = Integer.parseInt(entrada.getBody());
+								saida.setBody("1");
+							} catch(NumberFormatException ex) {
+								// Erro: O cara me manda mudar a tela mas nao manda um int valido de tela!
+								saida.setBody("0");
+							}
+						} else {
+							saida.setBody("0"); // Erro: nao to ligado, entao nao tem como alterar a tela!
+						}
+						break;
+				}
+			} catch(IOException ex) {
+				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
+				System.err.println(ex);
+				ex.printStackTrace();
+			}
+		}
 	}
-	
+
 }
