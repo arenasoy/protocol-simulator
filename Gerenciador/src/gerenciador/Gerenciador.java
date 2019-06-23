@@ -8,18 +8,17 @@ import java.util.ArrayList;
 
 public class Gerenciador {
 
-	private ArrayList<GerenciadorThread> client;
-	private ArrayList<Aluno> listaPresenca;
 	private ServerSocket socket;
 	private InetAddress addr;
 	private int port;
+
+	private ArrayList<Aluno> listaPresenca;
 
 	public Gerenciador() throws IOException {
 		this(9000);
 	}
 
 	public Gerenciador(int port) throws IOException {
-		this.client = new ArrayList<GerenciadorThread>();
 		this.port = port;
 		this.socket = new ServerSocket(this.port);
 		this.addr = Inet4Address.getLocalHost();
@@ -47,8 +46,7 @@ public class Gerenciador {
 
 		while (true) {
 			try {
-				t = new GerenciadorThread(socket.accept());
-				client.add(t);
+				t = new GerenciadorThread(socket.accept(), this);
 				System.out.println("Requisição: " + t.getHostAddress() + ":" + t.getPort());
 				t.run();
 			} catch(IOException ex) {
@@ -57,6 +55,10 @@ public class Gerenciador {
 				ex.printStackTrace();
 			}
 		}
+	}
+
+	private void marcarPresenca(Aluno a) {
+		listaPresenca.add(a);
 	}
 
 	/**
