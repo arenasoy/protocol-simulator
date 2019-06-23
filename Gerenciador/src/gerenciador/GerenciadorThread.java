@@ -11,10 +11,11 @@ public class GerenciadorThread extends Thread {
 	protected Socket socket;
 	int port;
 
-	public GerenciadorThread(Socket socket) {
+	public GerenciadorThread(Socket socket, Gerenciador main) {
 		this.socket = socket;
 		this.addr = socket.getLocalAddress();
 		this.port = socket.getPort();
+		this.main = main;
 	}
 
 	public String getHostAddress() {
@@ -39,7 +40,6 @@ public class GerenciadorThread extends Thread {
 			{
 				System.out.println(line);
 			}
-			System.out.println(new Message("GERENCIADOR", "CONNECT", "1").toString());
 			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 			w.write(new Message("GERENCIADOR", "CONNECT", "1").toString());
 			w.flush();
