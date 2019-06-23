@@ -1,80 +1,117 @@
 package sistema;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 
 public class Iluminacao {
 	
-	private String server;
-	private int port = 9000;
-	private int id = 0;
-	private Socket socket;
-	private OutputStreamWriter osw;
-	private BufferedWriter bw;
-	
-	public void connect() {
-		try {
-			System.out.println("connecting to " + server);
-			startBuffers();
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: SISTEMA_ILUMINACAO\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + 0 + "\n");
-			bw.write("ACTION: CONNECT\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
+	private String serverAddress;
+	private int serverPort, port;
+	private ServerSocket socket;
+	private InetAddress addr;
+
+	private boolean ligado[]; // fileiras ligadas
+
+	/**
+	 * Construtor padrao.
+	 *
+	 * @param serverAddress endereco do servidor do gerenciador.
+	 * @param serverPort porta do servidor do gerenciador.
+	 * @param port porta local.
+	 * @param fileiras do sistema de iluminacao
+	 */
+	public Iluminacao(String serverAddress, int serverPort, int port, int fileiras) throws IOException, IllegalArgumentException {
+		String message;
+		Socket socket;
+		Message m;
+
+		this.serverAddress = serverAddress;
+		this.serverPort = serverPort;
+		this.port = port;
+
+		this.ligado = new boolean[fileiras];
+
+		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
+		message = new Message("SISTEMA_ILUMINACAO", "CONNECT", Integer.toString(port)).send(serverAddress, serverPort);
+		m = new Message(message);
+		if(!m.getBody().equals("1")) {
+			throw new IOException("O gerenciador nao permitiu a minha conexao!");
+		}
+
+		this.socket = new ServerSocket(this.port);
+		this.addr = Inet4Address.getLocalHost();
+		if(this.addr == null) {
+			this.addr = Inet6Address.getLocalHost();
+		}
+		if(this.addr == null) {
+			this.addr = InetAddress.getLocalHost();
+		}
+		if(this.addr == null) {
+			throw new UnknownHostException();
 		}
 	}
 
-	private void startBuffers() throws UnknownHostException, IOException,
-			UnsupportedEncodingException {
-		socket = new Socket(server, port);
-		osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-		bw = new BufferedWriter(osw);
-	}
-	
-	public void answerChange(String action, char result) {
-		try {
-			startBuffers();
-			bw.write("SALA_INTEL\n");
-			bw.write("TYPE: SISTEMA_ILUMINACAO\n");
-			bw.write("ID: " + id++ + "\n");
-			bw.write("LEN: " + Character.BYTES + "\n");
-			bw.write("ACTION: " + action + "\n" );
-			bw.write(result + "\n");
-			
-			closeBuffers();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void closeBuffers() throws IOException {
-		bw.flush();
-		bw.close();
-		osw.close();
-		socket.close();
-	}
-
-	public String getServer() {
-		return server;
-	}
-
-	public void setServer(String server) {
-		this.server = server;
+	public String getHostAddress() {
+		return addr.getHostAddress();
 	}
 
 	public int getPort() {
-		return port;
+		return this.port;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void execute() {
+		BufferedWriter outputStream;
+		Message entrada, saida;
+		Socket s;
+
+		while (true) {
+			try {
+				s = socket.accept();
+				System.out.println("Requisicao de: " + s.getLocalAddress() + ":" + s.getLocalPort());
+				entrada = Message.getFromSocket(s);
+				saida = new Message("SISTEMA_ILUMINACAO", "", "");
+				switch(entrada.getAction()) {
+					case "ON":
+						try {
+							int i = Integer.parseInt(entrada.getBody());
+							if (i >= 0 && i < this.ligado.length) {
+								this.ligado[i] = true;
+								saida.setBody("1");
+							} else {
+								saida.setBody("0");
+							}
+						} catch(NumberFormatException ex) {
+							// Erro: O cara me manda acender uma fileira invalida!
+							saida.setBody("0");
+						}
+						saida.setAction("ON");
+						break;
+					case "OFF":
+						try {
+							int i = Integer.parseInt(entrada.getBody());
+							if (i >= 0 && i < this.ligado.length) {
+								this.ligado[i] = false;
+								saida.setBody("1");
+							} else {
+								saida.setBody("0");
+							}
+						} catch(NumberFormatException ex) {
+							// Erro: O cara me manda apagar uma fileira invalida!
+							saida.setBody("0");
+						}
+						saida.setAction("ON");
+						break;
+				}
+				outputStream = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+				outputStream.write(saida.toString());
+				outputStream.flush();
+				s.close();
+			} catch(IOException ex) {
+				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
+				System.err.println(ex);
+				ex.printStackTrace();
+			}
+		}
 	}
+
 }
