@@ -369,7 +369,17 @@ public class Console {
 	 * @return boolean lido
 	 */
 	public boolean readBoolean() {
-		return Boolean.parseBoolean(this.readString());
+		String s = this.readString();
+		try {
+			int read = Integer.parseInt(s);
+			if (read == 0) 
+				return false;
+			else if (read == 1)
+				return true;
+		} catch (Exception e) {
+			
+		}
+		return Boolean.parseBoolean(s);
 	}
 
 	/**
@@ -378,7 +388,17 @@ public class Console {
 	 * @return boolean lido
 	 */
 	public boolean readBoolean(String message) {
-		return Boolean.parseBoolean(this.readString(message));
+		String s = this.readString(message);
+		try {
+			int read = Integer.parseInt(s);
+			if (read == 0) 
+				return false;
+			else if (read == 1)
+				return true;
+		} catch (Exception e) {
+			
+		}
+		return Boolean.parseBoolean(s);
 	}
 	
 	/**
