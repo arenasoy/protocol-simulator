@@ -114,6 +114,28 @@ public class GerenciadorThread extends Thread {
 						case "INTERFACE_CLIENTE":
 							saida.setBody("1");
 							break;
+						case "LUZON":
+							if(main.alimentadorLuzes == null) {
+								saida.setBody("0");
+							} else {
+								try {
+									saida.setBody(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody());
+								} catch(Exception exc) {
+									saida.setBody("0"); // Ele caiu! Reconectado.
+								}
+							}
+							break;
+						case "LUZOFF":
+							if(main.alimentadorLuzes == null) {
+								saida.setBody("0");
+							} else {
+								try {
+									saida.setBody(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody());
+								} catch(Exception exc) {
+									saida.setBody("0"); // Ele caiu! Reconectado.
+								}
+							}
+							break;
 						default:
 							saida.setBody("0");
 					}
