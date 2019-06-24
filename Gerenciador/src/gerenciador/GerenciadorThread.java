@@ -3,7 +3,6 @@ package gerenciador;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +36,8 @@ public class GerenciadorThread extends Thread {
 		Dispositivo newD;
 		Uspiano u;
 		Matcher m;
+		String s;
+		int i;
 
 		try {
 			this.main.mutex.acquire();
@@ -50,13 +51,14 @@ public class GerenciadorThread extends Thread {
 		saida = new Message("GERENCIADOR", "", "");
 		try {
 			entrada = Message.getFromSocket(this.socket);
+			saida.setAction(entrada.getAction());
+			saida.setId(entrada.getId());
 
 			switch (entrada.getAction().toUpperCase()) {
 				case "CONNECT":
-					saida.setAction("CONNECT");
-					newD = new Dispositivo(this.getHostAddress(),Integer.parseInt(entrada.getBody()));
 					switch(entrada.getType().toUpperCase()) {
 						case "SISTEMA_ILUMINACAO":
+							newD = new Dispositivo(this.getHostAddress(),Integer.parseInt(entrada.getBody()));
 							if(main.alimentadorLuzes == null) {
 								main.alimentadorLuzes = newD;
 								saida.setBody("1");
@@ -71,6 +73,7 @@ public class GerenciadorThread extends Thread {
 							}
 							break;
 						case "AR_CONDICIONADO":
+							newD = new Dispositivo(this.getHostAddress(),Integer.parseInt(entrada.getBody()));
 							if(main.alimentadorAr == null) {
 								main.alimentadorAr = newD;
 								saida.setBody("1");
@@ -85,6 +88,7 @@ public class GerenciadorThread extends Thread {
 							}
 							break;
 						case "PROJETOR":
+							newD = new Dispositivo(this.getHostAddress(),Integer.parseInt(entrada.getBody()));
 							if(main.alimentadorProjetor == null) {
 								main.alimentadorProjetor = newD;
 								saida.setBody("1");
@@ -107,8 +111,11 @@ public class GerenciadorThread extends Thread {
 						case "CHAVE":
 							saida.setBody("1");
 							break;
-						case "CLIENTE":
+						case "INTERFACE_CLIENTE":
 							saida.setBody("1");
+							break;
+						default:
+							saida.setBody("0");
 					}
 					break;
 				case "DETECTED": // Sensor de presença
@@ -158,6 +165,46 @@ public class GerenciadorThread extends Thread {
 						exc.printStackTrace();
 					}
 					break;
+				case "LISTA":
+					s = "";
+					if(this.main.professor == null) {
+						System.out.println("Não tem ninguém na lista de presença porque nenhum outro professor registrou presença antes! (número usp de professor = 1...10)");
+					} else {
+						for(i = 0; i < this.main.listaPresenca.size(); i++) {
+							s += this.main.listaPresenca.get(i).toString();
+						}
+					}
+					s = s.trim();
+					saida.setBody(s);
+					break;
+				case "SET_TEMP":
+					if(this.main.alimentadorAr == null) {
+						saida.setBody("Erro: o alimentador do ar-condicionado não está conectado ao gerenciador!");
+						break;
+					}
+					try {
+						if(new Message(new Message("GERENCIADOR", "GET_TEMP", "").send(this.main.alimentadorAr.getAddress(), this.main.alimentadorAr.getPort())).getBody().equals("1")) {
+							saida.setBody("Temperatura alterada com sucesso.");
+						} else {
+							saida.setBody("Erro: o alimentador do ar-condicionado não permitiu vocẽ mudar a temperatura por algum motivo! O ar-condicionado tá ligado?");
+						}
+					} catch(IOException exc) {
+						saida.setBody("Erro: não foi possível conectar ao alimentador do ar-condicionado.");
+						break;
+					}
+					break;
+				case "GET_TEMP":
+					if(this.main.alimentadorAr == null) {
+						saida.setBody("Erro: o alimentador do ar-condicionado não está conectado ao gerenciador!");
+						break;
+					}
+					try {
+						saida.setBody("Temperatura: " + new Message(new Message("GERENCIADOR", "GET_TEMP", "").send(this.main.alimentadorAr.getAddress(), this.main.alimentadorAr.getPort())).getBody() + "ºC");
+					} catch(IOException exc) {
+						saida.setBody("Erro: não foi possível conectar ao alimentador do ar-condicionado.");
+						break;
+					}
+					break;
 			}
 			if(saida != null) {
 				outputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
@@ -170,6 +217,7 @@ public class GerenciadorThread extends Thread {
 			System.err.println(ex);
 			ex.printStackTrace();
 		}
+
 		this.main.mutex.release();
 	}
 	
