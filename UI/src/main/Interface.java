@@ -95,9 +95,7 @@ public class Interface extends JFrame implements ActionListener {
 		btnAr.addActionListener(this);
 		btnAr.setBounds(267, 13, 153, 102);
 		getContentPane().add(btnAr);
-
-		JButton btnLuz = new JButton("Gerenciar luzes");
-
+		
 		btnLuz = new JButton("Gerenciar luzes");
 		btnLuz.addActionListener(this);
 		btnLuz.setBounds(267, 138, 153, 102);
