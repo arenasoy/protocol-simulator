@@ -20,7 +20,6 @@ Siga os passos abaixo para que a execução ocorra com sucesso:
 - Inicie todos os sensores: [presença](SensorPresenca.jar), [leitor de cartão](LeitorCartao.jar) e [chave do projetor](ChaveProjetor.jar). Estes funcionam apenas como cliente para o gerenciador. Sendo assim, vão solicitar o endereço de host e porta do gerenciador (iniciado no primeiro passo). Você pode usar "localhost:PORTA" no caso de estar executando tudo em uma mesma máquina.
 - Inicie a [interface gráfica do professor](UI.jar). Ela funciona também apenas como cliente, e vai solicitar o endereço de host e porta do gerenciador, do mesmo modo que antes.
 
-## Workspace (Diretório de trabalho ou execução)
-O projeto referencia os seus recursos (áudio e imagem) de forma relativa ao diretório de trabalho ou diretório de execução. Dentro deste, portanto, deve existir o diretório "src" com o código-fonte e recursos da aplicação.
-
+## Código-fonte
+No diretório [Codigo-fonte](Codigo-fonte) encontram-se todos os projetos do trabalho prático e sua implementação em Java.
 
