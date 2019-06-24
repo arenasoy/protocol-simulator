@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,19 +9,20 @@ import javax.swing.JFrame;
 @SuppressWarnings("serial")
 public class Interface extends JFrame {
 
-	private Container container;
 	
 	public Interface() {
 		
-		container = getContentPane();
-		container.setLayout(null);
+		setSize(600, 600);
+		
+		getContentPane().setLayout(null);
 		
 		setTitle("Gerenciador");
 		
 		JButton btnPresenca = new JButton("Ver lista de presenca");
 		btnPresenca.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Main.novaTela(container);
+				dispose();
+				new ListaPresenca().setVisible(true);;
 			}
 		});
 		
@@ -32,7 +32,8 @@ public class Interface extends JFrame {
 		JButton btnProjetor = new JButton("Gerenciar projetor");
 		btnProjetor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Main.novaTela(container);
+				dispose();
+				new Projetor().setVisible(true);
 			}
 		});
 		btnProjetor.setBounds(12, 138, 153, 102);
@@ -41,7 +42,8 @@ public class Interface extends JFrame {
 		JButton btnAr = new JButton("Gerenciar ar-condicionado");
 		btnAr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Main.novaTela(container);
+				dispose();
+				new Ar().setVisible(true);
 			}
 		});
 		btnAr.setBounds(267, 13, 153, 102);
@@ -50,7 +52,8 @@ public class Interface extends JFrame {
 		JButton btnLuz = new JButton("Gerenciar luzes");
 		btnLuz.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Main.novaTela(container);
+				dispose();
+				new Luz().setVisible(true);
 			}
 		});
 		btnLuz.setBounds(267, 138, 153, 102);

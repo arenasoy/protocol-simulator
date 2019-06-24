@@ -1,13 +1,11 @@
 package main;
 
-import java.awt.Container;
-
 import javax.swing.JFrame;
 
 public class Projetor extends JFrame {
 
-	public Projetor(Container c) {
-		this.setContentPane(c);
+	public Projetor() {
+		setSize(600, 600);
 		setTitle("Gerenciador do projetor");
 	}
 }
