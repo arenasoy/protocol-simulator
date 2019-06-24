@@ -16,7 +16,8 @@ public class Message {
 
 	private static final String MSG_REGEX = "^\\s*SALA_INTEL\\s*[\\r\\n]+\\s*TYPE:\\s*([^\\r\\n]+)\\s*[\\r\\n]+\\s*"
 			+ "ID:\\s*([^\\r\\n]+)\\s*[\\r\\n]+\\s*LEN:\\s*([^\\r\\n]+)\\s*[\\r\\n]+\\s*ACTION:\\s*([^\\r\\n]+)\\s*([\\r\\n]+\\s*.*)?$";
-	private static final Pattern MSG_PATTERN = Pattern.compile(MSG_REGEX, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern MSG_PATTERN = Pattern.compile(MSG_REGEX,
+			Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
 	/* Construtores */
 
@@ -38,7 +39,8 @@ public class Message {
 	}
 
 	/**
-	 * Cria uma mensagem a partir de um TYPE, ID, ACTION e BODY. O LEN eh calculado a partir de BODY.
+	 * Cria uma mensagem a partir de um TYPE, ID, ACTION e BODY. O LEN eh
+	 * calculado a partir de BODY.
 	 *
 	 * @param type
 	 * @param id
@@ -50,26 +52,29 @@ public class Message {
 	}
 
 	/**
-	 * Cria uma mensagem a partir de um TYPE, ACTION e BODY. O LEN eh calculado a partir de BODY e o ID eh definido aleatoriamente.
+	 * Cria uma mensagem a partir de um TYPE, ACTION e BODY. O LEN eh calculado
+	 * a partir de BODY e o ID eh definido aleatoriamente.
 	 *
 	 * @param type
 	 * @param action
 	 * @param body
 	 */
 	public Message(String type, String action, String body) {
-		this(type, (int)(Math.random() * Integer.MAX_VALUE), action, body);
+		this(type, (int) (Math.random() * Integer.MAX_VALUE), action, body);
 	}
 
 	/**
-	 * Cria uma mensagem a partir de uma string formatada da maneira de nosso relatorio.
+	 * Cria uma mensagem a partir de uma string formatada da maneira de nosso
+	 * relatorio.
 	 *
-	 * @param fullMessage a string
+	 * @param fullMessage
+	 *            a string
 	 */
 	public Message(String fullMessage) {
 		Matcher m;
 
 		m = MSG_PATTERN.matcher(fullMessage);
-		if(!m.matches()) {
+		if (!m.matches()) {
 			throw new IllegalArgumentException("Invalid message.");
 		}
 
@@ -79,7 +84,7 @@ public class Message {
 		this.action = m.group(4);
 		this.body = m.group(5);
 
-		if(this.body == null || this.body.trim().isEmpty()) {
+		if (this.body == null || this.body.trim().isEmpty()) {
 			this.body = "";
 		}
 		this.body = this.body.trim();
@@ -88,9 +93,11 @@ public class Message {
 	/* Methods */
 
 	/**
-	 * Verifica se uma string pode ser usada para instanciar uma nova mensagem. (eh valida de acordo com o nosso relatorio?)
+	 * Verifica se uma string pode ser usada para instanciar uma nova mensagem.
+	 * (eh valida de acordo com o nosso relatorio?)
 	 *
-	 * @param fullMessage a string que sera validada
+	 * @param fullMessage
+	 *            a string que sera validada
 	 * @return
 	 */
 	public static boolean valid(String fullMessage) {
@@ -103,18 +110,21 @@ public class Message {
 	/**
 	 * Cria uma nova Mensagem a partir da resposta de um socket.
 	 *
-	 * @param receivingSocket o socket
+	 * @param receivingSocket
+	 *            o socket
 	 * @return a nova mensagem
 	 * @throws IOException
 	 */
-	public static Message getFromSocket(Socket receivingSocket) throws IOException {
+	public static Message getFromSocket(Socket receivingSocket)
+			throws IOException {
 		BufferedReader socketStream;
 		String l, input;
 
-		socketStream = new BufferedReader(new InputStreamReader(receivingSocket.getInputStream(), "UTF-8"));
+		socketStream = new BufferedReader(new InputStreamReader(
+				receivingSocket.getInputStream(), "UTF-8"));
 
 		input = "";
-		while((l = socketStream.readLine()) != null) {
+		while ((l = socketStream.readLine()) != null) {
 			l += System.lineSeparator();
 			input += l;
 		}
@@ -123,16 +133,21 @@ public class Message {
 	}
 
 	/**
-	 * Envia esta instancia de Mensagem como socket para um servidor e retorna uma string que eh toda a resposta dele pra essa mensagem.
-	 * Idealmente, essa string de resposta tambem eh uma mensagem valida e pode ser instanciada nessa classe.
+	 * Envia esta instancia de Mensagem como socket para um servidor e retorna
+	 * uma string que eh toda a resposta dele pra essa mensagem. Idealmente,
+	 * essa string de resposta tambem eh uma mensagem valida e pode ser
+	 * instanciada nessa classe.
 	 *
-	 * @param hostAddr o endereco do servidor
-	 * @param hostPort a porta do servidor
+	 * @param hostAddr
+	 *            o endereco do servidor
+	 * @param hostPort
+	 *            a porta do servidor
 	 * @return a string da mensagem de resposta do servidor
 	 * @throws UnknownHostException
 	 * @throws IOException
 	 */
-	public String send(String hostAddr, int hostPort) throws UnknownHostException, IOException {
+	public String send(String hostAddr, int hostPort)
+			throws UnknownHostException, IOException {
 		Socket sendingSocket;
 		BufferedWriter s;
 		BufferedReader r;
@@ -140,14 +155,16 @@ public class Message {
 
 		sendingSocket = new Socket(hostAddr, hostPort);
 
-		s = new BufferedWriter(new OutputStreamWriter(sendingSocket.getOutputStream(), "UTF-8"));
+		s = new BufferedWriter(new OutputStreamWriter(
+				sendingSocket.getOutputStream(), "UTF-8"));
 		s.write(this.toString());
 		s.flush();
 		sendingSocket.shutdownOutput();
 
-		r = new BufferedReader(new InputStreamReader(sendingSocket.getInputStream(), "UTF-8"));
+		r = new BufferedReader(new InputStreamReader(
+				sendingSocket.getInputStream(), "UTF-8"));
 		input = "";
-		while((l = r.readLine()) != null) {
+		while ((l = r.readLine()) != null) {
 			l += System.lineSeparator();
 			input += l;
 		}
@@ -179,7 +196,8 @@ public class Message {
 	}
 
 	/**
-	 * Retorna essa instancia de Mensagem da forma como descrito no nosso relatorio em uma string.
+	 * Retorna essa instancia de Mensagem da forma como descrito no nosso
+	 * relatorio em uma string.
 	 *
 	 * @return a string
 	 */
@@ -192,7 +210,7 @@ public class Message {
 		fullMessage += "ID: " + this.id + System.lineSeparator();
 		fullMessage += "LEN: " + this.len + System.lineSeparator();
 		fullMessage += "ACTION: " + this.action;
-		if(this.body != null && !this.body.trim().isEmpty()) {
+		if (this.body != null && !this.body.trim().isEmpty()) {
 			fullMessage += System.lineSeparator() + this.body;
 		}
 
@@ -219,7 +237,7 @@ public class Message {
 
 	public void setBody(String newBody, boolean adjustLen) {
 		this.body = newBody;
-		if(adjustLen) {
+		if (adjustLen) {
 			this.len = newBody.length();
 		}
 	}

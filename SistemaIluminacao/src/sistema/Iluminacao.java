@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class Iluminacao {
-	
+
 	private String serverAddress;
 	private int serverPort, port;
 	private ServerSocket socket;
@@ -15,12 +15,17 @@ public class Iluminacao {
 	/**
 	 * Construtor padrao.
 	 *
-	 * @param serverAddress endereco do servidor do gerenciador.
-	 * @param serverPort porta do servidor do gerenciador.
-	 * @param port porta local.
-	 * @param fileiras do sistema de iluminacao
+	 * @param serverAddress
+	 *            endereco do servidor do gerenciador.
+	 * @param serverPort
+	 *            porta do servidor do gerenciador.
+	 * @param port
+	 *            porta local.
+	 * @param fileiras
+	 *            do sistema de iluminacao
 	 */
-	public Iluminacao(String serverAddress, int serverPort, int port, int fileiras) throws IOException, IllegalArgumentException {
+	public Iluminacao(String serverAddress, int serverPort, int port,
+			int fileiras) throws IOException, IllegalArgumentException {
 		String message;
 		Socket socket;
 		Message m;
@@ -32,21 +37,22 @@ public class Iluminacao {
 		this.ligado = new boolean[fileiras];
 
 		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
-		message = new Message("SISTEMA_ILUMINACAO", "CONNECT", Integer.toString(port)).send(serverAddress, serverPort);
+		message = new Message("SISTEMA_ILUMINACAO", "CONNECT",
+				Integer.toString(port)).send(serverAddress, serverPort);
 		m = new Message(message);
-		if(!m.getBody().equals("1")) {
+		if (!m.getBody().equals("1")) {
 			throw new IOException("O gerenciador nao permitiu a minha conexao!");
 		}
 
 		this.socket = new ServerSocket(this.port);
 		this.addr = Inet4Address.getLocalHost();
-		if(this.addr == null) {
+		if (this.addr == null) {
 			this.addr = Inet6Address.getLocalHost();
 		}
-		if(this.addr == null) {
+		if (this.addr == null) {
 			this.addr = InetAddress.getLocalHost();
 		}
-		if(this.addr == null) {
+		if (this.addr == null) {
 			throw new UnknownHostException();
 		}
 	}
@@ -67,47 +73,50 @@ public class Iluminacao {
 		while (true) {
 			try {
 				s = socket.accept();
-				System.out.println("Requisicao de: " + s.getLocalAddress() + ":" + s.getLocalPort());
+				System.out.println("Requisicao de: " + s.getLocalAddress()
+						+ ":" + s.getLocalPort());
 				entrada = Message.getFromSocket(s);
 				saida = new Message("SISTEMA_ILUMINACAO", "", "");
-				switch(entrada.getAction()) {
-					case "ON":
-						try {
-							int i = Integer.parseInt(entrada.getBody());
-							if (i >= 0 && i < this.ligado.length) {
-								this.ligado[i] = true;
-								saida.setBody("1");
-							} else {
-								saida.setBody("0");
-							}
-						} catch(NumberFormatException ex) {
-							// Erro: O cara me manda acender uma fileira invalida!
+				switch (entrada.getAction()) {
+				case "ON":
+					try {
+						int i = Integer.parseInt(entrada.getBody());
+						if (i >= 0 && i < this.ligado.length) {
+							this.ligado[i] = true;
+							saida.setBody("1");
+						} else {
 							saida.setBody("0");
 						}
-						saida.setAction("ON");
-						break;
-					case "OFF":
-						try {
-							int i = Integer.parseInt(entrada.getBody());
-							if (i >= 0 && i < this.ligado.length) {
-								this.ligado[i] = false;
-								saida.setBody("1");
-							} else {
-								saida.setBody("0");
-							}
-						} catch(NumberFormatException ex) {
-							// Erro: O cara me manda apagar uma fileira invalida!
+					} catch (NumberFormatException ex) {
+						// Erro: O cara me manda acender uma fileira invalida!
+						saida.setBody("0");
+					}
+					saida.setAction("ON");
+					break;
+				case "OFF":
+					try {
+						int i = Integer.parseInt(entrada.getBody());
+						if (i >= 0 && i < this.ligado.length) {
+							this.ligado[i] = false;
+							saida.setBody("1");
+						} else {
 							saida.setBody("0");
 						}
-						saida.setAction("ON");
-						break;
+					} catch (NumberFormatException ex) {
+						// Erro: O cara me manda apagar uma fileira invalida!
+						saida.setBody("0");
+					}
+					saida.setAction("ON");
+					break;
 				}
-				outputStream = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+				outputStream = new BufferedWriter(new OutputStreamWriter(
+						s.getOutputStream(), "UTF-8"));
 				outputStream.write(saida.toString());
 				outputStream.flush();
 				s.close();
-			} catch(IOException ex) {
-				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
+			} catch (IOException ex) {
+				System.err
+						.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
 				System.err.println(ex);
 				ex.printStackTrace();
 			}

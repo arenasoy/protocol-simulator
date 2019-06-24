@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class Alimentador {
-	
+
 	private String serverAddress;
 	private int serverPort, port;
 	private ServerSocket socket;
@@ -16,11 +16,15 @@ public class Alimentador {
 	/**
 	 * Construtor padrao.
 	 *
-	 * @param serverAddress endereco do servidor do gerenciador.
-	 * @param serverPort porta do servidor do gerenciador.
-	 * @param port porta local.
+	 * @param serverAddress
+	 *            endereco do servidor do gerenciador.
+	 * @param serverPort
+	 *            porta do servidor do gerenciador.
+	 * @param port
+	 *            porta local.
 	 */
-	public Alimentador(String serverAddress, int serverPort, int port) throws IOException, IllegalArgumentException {
+	public Alimentador(String serverAddress, int serverPort, int port)
+			throws IOException, IllegalArgumentException {
 		String message;
 		Socket socket;
 		Message m;
@@ -33,21 +37,22 @@ public class Alimentador {
 		this.screen = 1;
 
 		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
-		message = new Message("PROJETOR", "CONNECT", Integer.toString(port)).send(serverAddress, serverPort);
+		message = new Message("PROJETOR", "CONNECT", Integer.toString(port))
+				.send(serverAddress, serverPort);
 		m = new Message(message);
-		if(!m.getBody().equals("1")) {
+		if (!m.getBody().equals("1")) {
 			throw new IOException("O gerenciador nao permitiu a minha conexao!");
 		}
 
 		this.socket = new ServerSocket(this.port);
 		this.addr = Inet4Address.getLocalHost();
-		if(this.addr == null) {
+		if (this.addr == null) {
 			this.addr = Inet6Address.getLocalHost();
 		}
-		if(this.addr == null) {
+		if (this.addr == null) {
 			this.addr = InetAddress.getLocalHost();
 		}
-		if(this.addr == null) {
+		if (this.addr == null) {
 			throw new UnknownHostException();
 		}
 	}
@@ -68,46 +73,51 @@ public class Alimentador {
 		while (true) {
 			try {
 				s = socket.accept();
-				System.out.println("Requisicao de: " + s.getLocalAddress() + ":" + s.getLocalPort());
+				System.out.println("Requisicao de: " + s.getLocalAddress()
+						+ ":" + s.getLocalPort());
 				entrada = Message.getFromSocket(s);
 				saida = new Message("PROJETOR", "", "");
-				switch(entrada.getAction()) {
-					case "ON":
-						this.ligado = true;
-						this.screen = 1;
-						saida.setAction("ON");
-						saida.setBody("1");
-						break;
-					case "OFF":
-						this.ligado = false;
-						saida.setAction("OFF");
-						saida.setBody("1");
-						break;
-					case "GET_SCREEN":
-						saida.setAction("GET_SCREEN");
-						saida.setBody(Integer.toString(this.screen));
-						break;
-					case "SET_SCREEN":
-						saida.setAction("SET_SCREEN");
-						if (this.ligado) {
-							try {
-								this.screen = Integer.parseInt(entrada.getBody());
-								saida.setBody("1");
-							} catch(NumberFormatException ex) {
-								// Erro: O cara me manda mudar a tela mas nao manda um int valido de tela!
-								saida.setBody("0");
-							}
-						} else {
-							saida.setBody("0"); // Erro: nao to ligado, entao nao tem como alterar a tela!
+				switch (entrada.getAction()) {
+				case "ON":
+					this.ligado = true;
+					this.screen = 1;
+					saida.setAction("ON");
+					saida.setBody("1");
+					break;
+				case "OFF":
+					this.ligado = false;
+					saida.setAction("OFF");
+					saida.setBody("1");
+					break;
+				case "GET_SCREEN":
+					saida.setAction("GET_SCREEN");
+					saida.setBody(Integer.toString(this.screen));
+					break;
+				case "SET_SCREEN":
+					saida.setAction("SET_SCREEN");
+					if (this.ligado) {
+						try {
+							this.screen = Integer.parseInt(entrada.getBody());
+							saida.setBody("1");
+						} catch (NumberFormatException ex) {
+							// Erro: O cara me manda mudar a tela mas nao manda
+							// um int valido de tela!
+							saida.setBody("0");
 						}
-						break;
+					} else {
+						saida.setBody("0"); // Erro: nao to ligado, entao nao
+											// tem como alterar a tela!
+					}
+					break;
 				}
-				outputStream = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+				outputStream = new BufferedWriter(new OutputStreamWriter(
+						s.getOutputStream(), "UTF-8"));
 				outputStream.write(saida.toString());
 				outputStream.flush();
 				s.close();
-			} catch(IOException ex) {
-				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
+			} catch (IOException ex) {
+				System.err
+						.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
 				System.err.println(ex);
 				ex.printStackTrace();
 			}

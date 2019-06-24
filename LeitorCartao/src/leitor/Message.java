@@ -1,4 +1,4 @@
-package sistema;
+package leitor;
 
 import java.io.*;
 import java.net.Socket;
