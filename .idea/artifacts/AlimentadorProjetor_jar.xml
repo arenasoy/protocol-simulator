@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AlimentadorProjetor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AlimentadorProjetor_jar</output-path>
+    <root id="archive" name="AlimentadorProjetor.jar">
+      <element id="module-output" name="AlimentadorProjetor" />
+    </root>
+  </artifact>
+</component>

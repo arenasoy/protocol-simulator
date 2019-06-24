@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Gerenciador:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Gerenciador_jar</output-path>
+    <root id="archive" name="Gerenciador.jar">
+      <element id="module-output" name="Gerenciador" />
+    </root>
+  </artifact>
+</component>

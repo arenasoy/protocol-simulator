@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SistemaIluminacao:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SistemaIluminacao_jar</output-path>
+    <root id="archive" name="SistemaIluminacao.jar">
+      <element id="module-output" name="SistemaIluminacao" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LeitorCartao:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LeitorCartao_jar</output-path>
+    <root id="archive" name="LeitorCartao.jar">
+      <element id="module-output" name="LeitorCartao" />
+    </root>
+  </artifact>
+</component>

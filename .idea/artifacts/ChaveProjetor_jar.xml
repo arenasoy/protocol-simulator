@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ChaveProjetor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ChaveProjetor_jar</output-path>
+    <root id="archive" name="ChaveProjetor.jar">
+      <element id="module-output" name="ChaveProjetor" />
+    </root>
+  </artifact>
+</component>
