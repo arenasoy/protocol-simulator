@@ -11,13 +11,18 @@ import java.util.regex.Pattern;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class Interface extends JFrame {
+public class Interface extends JFrame implements ActionListener {
 
 	private static final String ADDR_REGEX = "^\\s*([^:]+):([0-9]+)\\s*$";
 	private static final Pattern ADDR_PATTERN = Pattern.compile(ADDR_REGEX);
 
 	public String serverAddr;
 	public int serverPort;
+
+	JButton btnPresenca;
+	JButton btnProjetor;
+	JButton btnAr;
+	JButton btnLuz;
 
 	public Interface() {
 		String s;
@@ -54,47 +59,48 @@ public class Interface extends JFrame {
 		
 		setTitle("Gerenciador");
 		
-		JButton btnPresenca = new JButton("Ver lista de presenca");
-		btnPresenca.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-				new ListaPresenca().setVisible(true);;
-			}
-		});
+		btnPresenca = new JButton("Ver lista de presenca");
+		btnPresenca.addActionListener(this);
 		
 		btnPresenca.setBounds(12, 13, 153, 102);
 		getContentPane().add(btnPresenca);
 		
-		JButton btnProjetor = new JButton("Gerenciar projetor");
-		btnProjetor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-				new Projetor().setVisible(true);
-			}
-		});
+		btnProjetor = new JButton("Gerenciar projetor");
+		btnProjetor.addActionListener(this);
 		btnProjetor.setBounds(12, 138, 153, 102);
 		getContentPane().add(btnProjetor);
-		
-		JButton btnAr = new JButton("Gerenciar ar-condicionado");
-		btnAr.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-				new Ar().setVisible(true);
-			}
-		});
+
+		btnAr = new JButton("Gerenciar ar-condicionado");
+		btnAr.addActionListener(this);
 		btnAr.setBounds(267, 13, 153, 102);
 		getContentPane().add(btnAr);
-		
-		JButton btnLuz = new JButton("Gerenciar luzes");
-		btnLuz.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-				new Luz().setVisible(true);
-			}
-		});
+
+		btnLuz = new JButton("Gerenciar luzes");
+		btnLuz.addActionListener(this);
 		btnLuz.setBounds(267, 138, 153, 102);
 		getContentPane().add(btnLuz);
 		
 		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object src;
+
+		src = e.getSource();
+		if(src == btnPresenca) {
+			this.setVisible(false);
+			new ListaPresenca(this).setVisible(true);
+		} else if(src == btnProjetor) {
+			this.setVisible(false);
+			new Projetor().setVisible(true);
+		} else if(src == btnAr) {
+			this.setVisible(false);
+			new Ar(this).setVisible(true);
+		} else if(src == btnLuz) {
+			this.setVisible(false);
+			new Luz().setVisible(true);
+		}
+
 	}
 }
