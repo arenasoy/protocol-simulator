@@ -77,7 +77,7 @@ public class GerenciadorThread extends Thread {
 							if(main.alimentadorAr == null) {
 								main.alimentadorAr = newD;
 								saida.setBody("1");
-							} else { // Opa! Já tem um alimentador de ar condicionado conectado. Precisamos ver se ele não caiu e é ele mesmo reconectando...
+							} else { // Opa! Ja tem um alimentador de ar condicionado conectado. Precisamos ver se ele não caiu e é ele mesmo reconectando...
 								try {
 									new Message("GERENCIADOR", "", "").send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort());
 									saida.setBody("0"); // Ele não caiu! Temos um impostor aqui!
@@ -92,10 +92,10 @@ public class GerenciadorThread extends Thread {
 							if(main.alimentadorProjetor == null) {
 								main.alimentadorProjetor = newD;
 								saida.setBody("1");
-							} else { // Opa! Já tem um alimentador do projetor conectado. Precisamos ver se ele não caiu e é ele mesmo reconectando...
+							} else { // Opa! Ja tem um alimentador do projetor conectado. Precisamos ver se ele nao caiu e eh ele mesmo reconectando...
 								try {
 									new Message("GERENCIADOR", "", "").send(main.alimentadorProjetor.getAddress(), main.alimentadorProjetor.getPort());
-									saida.setBody("0"); // Ele não caiu! Temos um impostor aqui!
+									saida.setBody("0"); // Ele nao caiu! Temos um impostor aqui!
 								} catch(IOException exc) {
 									main.alimentadorProjetor = newD;
 									saida.setBody("1"); // Ele caiu! Reconectado.
@@ -114,36 +114,14 @@ public class GerenciadorThread extends Thread {
 						case "INTERFACE_CLIENTE":
 							saida.setBody("1");
 							break;
-						case "LUZON":
-							if(main.alimentadorLuzes == null) {
-								saida.setBody("0");
-							} else {
-								try {
-									saida.setBody(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody());
-								} catch(Exception exc) {
-									saida.setBody("0"); // Ele caiu! Reconectado.
-								}
-							}
-							break;
-						case "LUZOFF":
-							if(main.alimentadorLuzes == null) {
-								saida.setBody("0");
-							} else {
-								try {
-									saida.setBody(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody());
-								} catch(Exception exc) {
-									saida.setBody("0"); // Ele caiu! Reconectado.
-								}
-							}
-							break;
 						default:
 							saida.setBody("0");
 					}
 					break;
-				case "DETECTED": // Sensor de presença
-					saida = null; // não tem resposta pro sensor de presença.
+				case "DETECTED": // Sensor de presenca
+					saida = null; // não tem resposta pro sensor de presenca.
 					break;
-				case "READ": // Leitor de cartão
+				case "READ": // Leitor de cartao
 					m = Pattern.compile("^[0-9]+\\s+.+$", Pattern.DOTALL).matcher(entrada.getBody());
 					if(!m.matches()) {
 						saida.setBody("0");
@@ -155,9 +133,9 @@ public class GerenciadorThread extends Thread {
 						this.main.listaPresenca = new ArrayList<>();
 						break;
 					}
-					// É aluno.
+					// eh aluno.
 					if(this.main.professor == null) {
-						System.out.println("Não é possível registrar presença pro aluno, porque nenhum outro professor registrou presença antes! (número usp de professor = 1...10)");
+						System.out.println("Nao eh possivel registrar presenca pro aluno, porque nenhum outro professor registrou presenca antes! (numero usp de professor = 1...10)");
 						saida.setBody("0");
 						break;
 					}
@@ -227,6 +205,60 @@ public class GerenciadorThread extends Thread {
 						break;
 					}
 					break;
+				case "ARON":
+					if(main.alimentadorAr == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							if(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody().equals("1")) {
+								saida.setBody("Ar-condicionado ligado com sucesso.");
+							} else {
+								saida.setBody("Não foi possível ligar o ar-condicionado.");
+							}
+						} catch(Exception exc) {
+							saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
+						}
+					}
+					break;
+				case "AROFF":
+					if(main.alimentadorAr == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							if(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody().equals("1")) {
+								saida.setBody("Ar-condicionado desligado com sucesso.");
+							} else {
+								saida.setBody("Não foi possível desligar o ar-condicionado.");
+							}
+						} catch(Exception exc) {
+							saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
+						}
+					}
+					break;
+				case "LUZON":
+					if(main.alimentadorLuzes == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							saida.setBody(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorLuzes.getAddress(), main.alimentadorLuzes.getPort())).getBody());
+						} catch(Exception exc) {
+							saida.setBody("0");
+						}
+					}
+					break;
+				case "LUZOFF":
+					if(main.alimentadorLuzes == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							saida.setBody(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorLuzes.getAddress(), main.alimentadorLuzes.getPort())).getBody());
+						} catch(Exception exc) {
+							saida.setBody("0");
+						}
+					}
+					break;
+				default:
+					saida = null;
 			}
 			if(saida != null) {
 				outputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));

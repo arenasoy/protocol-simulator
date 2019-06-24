@@ -36,7 +36,7 @@ public class Alimentador {
 		this.serverPort = serverPort;
 		this.port = port;
 
-		this.ligado = false;
+		this.ligado = true;
 		this.temperatura = 20;
 
 		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
