@@ -5,7 +5,9 @@ import java.net.*;
 
 public class Alimentador {
 
+	@SuppressWarnings("unused")
 	private String serverAddress;
+	@SuppressWarnings("unused")
 	private int serverPort, port;
 	private ServerSocket socket;
 	private InetAddress addr;
@@ -26,6 +28,7 @@ public class Alimentador {
 	public Alimentador(String serverAddress, int serverPort, int port)
 			throws IOException, IllegalArgumentException {
 		String message;
+		@SuppressWarnings("unused")
 		Socket socket;
 		Message m;
 

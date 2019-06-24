@@ -5,7 +5,9 @@ import java.net.*;
 
 public class Iluminacao {
 
+	@SuppressWarnings("unused")
 	private String serverAddress;
+	@SuppressWarnings("unused")
 	private int serverPort, port;
 	private ServerSocket socket;
 	private InetAddress addr;
@@ -27,6 +29,7 @@ public class Iluminacao {
 	public Iluminacao(String serverAddress, int serverPort, int port,
 			int fileiras) throws IOException, IllegalArgumentException {
 		String message;
+		@SuppressWarnings("unused")
 		Socket socket;
 		Message m;
 

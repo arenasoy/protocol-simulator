@@ -14,10 +14,10 @@ public class Chave {
 
 	private String serverAddress;
 	private int serverPort, port;
+	@SuppressWarnings("unused")
 	private ServerSocket socket;
 	private InetAddress addr;
 
-	private boolean ligado; // A chave ta ligada?
 
 	/**
 	 * Construtor padrao.
@@ -32,14 +32,13 @@ public class Chave {
 	public Chave(String serverAddress, int serverPort, int port)
 			throws IOException, IllegalArgumentException {
 		String message;
+		@SuppressWarnings("unused")
 		Socket socket;
 		Message m;
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.port = port;
-
-		this.ligado = false;
 
 		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
 		message = new Message("CHAVE", "CONNECT", Integer.toString(port)).send(
@@ -84,10 +83,8 @@ public class Chave {
 			saida = new Message("CHAVE", "", "");
 
 			if (on == 1) {
-				this.ligado = true;
 				saida.setAction("ON");
 			} else if (on == 0) {
-				this.ligado = false;
 				saida.setAction("OFF");
 			} else {
 				System.out.println("Valor incorreto");

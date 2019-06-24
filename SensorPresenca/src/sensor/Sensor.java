@@ -1,9 +1,6 @@
 package sensor;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -17,6 +14,7 @@ public class Sensor {
 
 	private String serverAddress;
 	private int serverPort, port;
+	@SuppressWarnings("unused")
 	private ServerSocket socket;
 	private InetAddress addr;
 
@@ -33,6 +31,7 @@ public class Sensor {
 	public Sensor(String serverAddress, int serverPort, int port)
 			throws IOException, IllegalArgumentException {
 		String message;
+		@SuppressWarnings("unused")
 		Socket socket;
 		Message m;
 
