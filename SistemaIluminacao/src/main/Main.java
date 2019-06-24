@@ -24,7 +24,7 @@ public class Main {
 		System.out.println();
 
 		do {
-			p = c.readInt("Em qual porta o servidor do alimentador deve iniciar? (recomendado = 9001-9999)");
+			p = c.readInt("Em qual porta o servidor do sistema de iluminacao deve iniciar? (recomendado = 9001-9999)");
 
 			if (p < 1 || p > 65535) {
 				System.out.println("Porta invalida! Deve ser um valor entre 1-65535.");
