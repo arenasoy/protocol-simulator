@@ -19,7 +19,7 @@ public class Ar extends JFrame implements ActionListener, WindowListener {
 	JButton btnSetTemperatura;
 
 	public Ar(Interface parent) {
-		setTitle("Gerenciador do ar-condicionado");
+		setTitle("Ar");
 		getContentPane().setLayout(new FlowLayout());
 		setSize(300, 155);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();

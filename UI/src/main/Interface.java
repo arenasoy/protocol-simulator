@@ -83,7 +83,7 @@ public class Interface extends JFrame implements ActionListener, WindowListener 
 
 		setTitle("Gerenciador");
 
-		btnPresenca = new JButton("Ver lista de presenca");
+		btnPresenca = new JButton("<html>Ver lista<br/>de presenca<html>");
 		btnPresenca.addActionListener(this);
 
 		btnPresenca.setBounds(12, 13, 153, 102);
@@ -94,7 +94,7 @@ public class Interface extends JFrame implements ActionListener, WindowListener 
 		btnProjetor.setBounds(12, 138, 153, 102);
 		getContentPane().add(btnProjetor);
 
-		btnAr = new JButton("Gerenciar ar-condicionado");
+		btnAr = new JButton("<html>Gerenciar<br/>ar-condicionado<html>");
 		btnAr.addActionListener(this);
 		btnAr.setBounds(267, 13, 153, 102);
 		getContentPane().add(btnAr);
