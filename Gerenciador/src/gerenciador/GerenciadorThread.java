@@ -125,7 +125,7 @@ public class GerenciadorThread extends Thread {
 								}
 							}
 							break;
-						case "LUZON":
+						case "LUZOFF":
 							if(main.alimentadorLuzes == null) {
 								saida.setBody("0");
 							} else {
