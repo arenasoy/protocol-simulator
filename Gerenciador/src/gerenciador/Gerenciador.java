@@ -4,6 +4,8 @@ package gerenciador;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.Semaphore;
 
 
 public class Gerenciador {
@@ -12,7 +14,15 @@ public class Gerenciador {
 	private InetAddress addr;
 	private int port;
 
-	private ArrayList<Aluno> listaPresenca;
+	public Dispositivo
+		alimentadorLuzes,
+		alimentadorAr,
+		alimentadorProjetor;
+	public Semaphore mutex;
+
+	public Uspiano professor;
+	public ArrayList<Uspiano> listaPresenca;
+	public Date ultimaPresenca;
 
 	public Gerenciador() throws IOException {
 		this(9000);
@@ -31,6 +41,12 @@ public class Gerenciador {
 		if(this.addr == null) {
 			throw new UnknownHostException();
 		}
+		this.mutex = new Semaphore(1);
+
+		this.alimentadorLuzes = this.alimentadorAr = this.alimentadorProjetor = null;
+		this.ultimaPresenca = null;
+		this.listaPresenca = null;
+		this.professor = null;
 	}
 
 	public String getHostAddress() {
@@ -43,12 +59,16 @@ public class Gerenciador {
 
 	public void execute() {
 		GerenciadorThread t;
+		Socket s;
 
 		while (true) {
 			try {
-				t = new GerenciadorThread(socket.accept(), this);
-				System.out.println("Requisição: " + t.getHostAddress() + ":" + t.getPort());
-				t.run();
+				s = socket.accept();
+				if(s != null) {
+					t = new GerenciadorThread(s, this);
+					System.out.println("Requisição: " + t.getHostAddress() + ":" + t.getPort());
+					t.run();
+				}
 			} catch(IOException ex) {
 				System.err.println("Alguém tentou conectar aqui no servidor, mas não deu certo. :(");
 				System.err.println(ex);
@@ -57,15 +77,4 @@ public class Gerenciador {
 		}
 	}
 
-	private void marcarPresenca(Aluno a) {
-		listaPresenca.add(a);
-	}
-
-	/**
-	 * Este método a thread cliente chama pra indicar que acabou a requisição do cliente.
-	 */
-	public void disconnected() {
-		;
-	}
-	
 }

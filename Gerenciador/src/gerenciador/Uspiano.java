@@ -1,16 +1,20 @@
 package gerenciador;
 
-public class Aluno implements Comparable<Aluno> {
+public class Uspiano implements Comparable<Uspiano> {
 
 	int numeroUSP;
 	String nome;
 
-	public Aluno(int nUsp, String nome) {
+	public Uspiano(int nUsp, String nome) {
 		if(nome == null) {
 			throw new NullPointerException();
 		}
 		this.numeroUSP = nUsp;
 		this.nome = nome;
+	}
+
+	public Uspiano(String nUsp, String nome) {
+		this(Integer.parseInt(nUsp), nome);
 	}
 
 	public int getNumeroUSP() {
@@ -27,7 +31,7 @@ public class Aluno implements Comparable<Aluno> {
 	}
 
 	@Override
-	public int compareTo(Aluno a) {
+	public int compareTo(Uspiano a) {
 		return this.getName().compareTo(a.getName());
 	}
 
