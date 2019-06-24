@@ -13,10 +13,8 @@ import console.Console;
 public class Leitor {
 
 	private String serverAddress;
-	private int serverPort, port;
+	private int serverPort;
 	@SuppressWarnings("unused")
-	private ServerSocket socket;
-	private InetAddress addr;
 
 	/**
 	 * Construtor padrao.
@@ -25,10 +23,8 @@ public class Leitor {
 	 *            endereco do servidor do gerenciador.
 	 * @param serverPort
 	 *            porta do servidor do gerenciador.
-	 * @param port
-	 *            porta local.
 	 */
-	public Leitor(String serverAddress, int serverPort, int port)
+	public Leitor(String serverAddress, int serverPort)
 			throws IOException, IllegalArgumentException {
 		String message;
 		@SuppressWarnings("unused")
@@ -37,35 +33,14 @@ public class Leitor {
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-		this.port = port;
 
 		/* Tentar conectar ao gerenciador, mandando minha porta de servidor */
 		message = new Message("LEITOR_CARTAO", "CONNECT",
-				Integer.toString(port)).send(serverAddress, serverPort);
+				"").send(serverAddress, serverPort);
 		m = new Message(message);
 		if (!m.getBody().equals("1")) {
 			throw new IOException("O gerenciador nao permitiu a minha conexao!");
 		}
-
-		this.socket = new ServerSocket(this.port);
-		this.addr = Inet4Address.getLocalHost();
-		if (this.addr == null) {
-			this.addr = Inet6Address.getLocalHost();
-		}
-		if (this.addr == null) {
-			this.addr = InetAddress.getLocalHost();
-		}
-		if (this.addr == null) {
-			throw new UnknownHostException();
-		}
-	}
-
-	public String getHostAddress() {
-		return addr.getHostAddress();
-	}
-
-	public int getPort() {
-		return this.port;
 	}
 
 	public void execute() {

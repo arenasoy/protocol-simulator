@@ -29,7 +29,7 @@ public class ListaPresenca extends JFrame implements WindowListener {
 
 		try {
 			s = new Message(new Message("INTERFACE_CLIENTE", "LISTA", "").send(this.parent.serverAddr, this.parent.serverPort)).getBody();
-			String[] names = s.trim().split("[\r\n]+");
+			String[] names = s.trim().split("[\\r\\n]+");
 			lbl = new JList(names);
 			lbl.setPreferredSize(new Dimension(400, 530));
 			getContentPane().add(lbl);

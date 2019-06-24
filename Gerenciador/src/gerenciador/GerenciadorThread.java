@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,7 +123,7 @@ public class GerenciadorThread extends Thread {
 					saida = null; // não tem resposta pro sensor de presença.
 					break;
 				case "READ": // Leitor de cartão
-					m = Pattern.compile("^[0-9]+\\s+.+$", Pattern.DOTALL).matcher(entrada.getBody());
+					m = Pattern.compile("^([0-9]+)\\s+(.+)$", Pattern.DOTALL).matcher(entrada.getBody());
 					if(!m.matches()) {
 						saida.setBody("0");
 						break;
@@ -170,8 +171,9 @@ public class GerenciadorThread extends Thread {
 					if(this.main.professor == null) {
 						System.out.println("Não tem ninguém na lista de presença porque nenhum outro professor registrou presença antes! (número usp de professor = 1...10)");
 					} else {
+						Collections.sort(this.main.listaPresenca); // Ordena a lista de chamada
 						for(i = 0; i < this.main.listaPresenca.size(); i++) {
-							s += this.main.listaPresenca.get(i).toString();
+							s += this.main.listaPresenca.get(i).toString() + System.lineSeparator();
 						}
 					}
 					s = s.trim();
