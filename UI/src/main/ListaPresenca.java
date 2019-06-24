@@ -16,7 +16,7 @@ public class ListaPresenca extends JFrame implements WindowListener {
 	public ListaPresenca(Interface parent) {
 		String s;
 
-		setTitle("Lista de presença");
+		setTitle("Lista de presenca");
 		getContentPane().setLayout(new FlowLayout());
 		setSize(500, 600);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -34,7 +34,7 @@ public class ListaPresenca extends JFrame implements WindowListener {
 			lbl.setPreferredSize(new Dimension(400, 530));
 			getContentPane().add(lbl);
 		} catch (Exception exc) {
-			JOptionPane.showMessageDialog(this, "Não foi possível comunicar com o gerenciador!", "Lista", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Nao foi possivel comunicar com o gerenciador!", "Lista", JOptionPane.ERROR_MESSAGE);
 			this.setVisible(false);
 			dispose();
 		}

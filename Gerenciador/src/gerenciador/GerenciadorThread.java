@@ -161,7 +161,7 @@ public class GerenciadorThread extends Thread {
 							new Message("GERENCIADOR", "OFF", "").send(main.alimentadorProjetor.getAddress(), main.alimentadorProjetor.getPort());
 						}
 					} catch(IOException exc) {
-						System.err.println("Falha ao estabelecer comunicação com o alimentador do projetor. :O");
+						System.err.println("Falha ao estabelecer comunicacao com o alimentador do projetor. :O");
 						System.err.println(exc);
 						exc.printStackTrace();
 					}

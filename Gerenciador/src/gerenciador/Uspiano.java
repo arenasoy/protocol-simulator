@@ -27,7 +27,7 @@ public class Uspiano implements Comparable<Uspiano> {
 
 	@Override
 	public String toString() {
-		return this.nome + " (Nº " + this.numeroUSP + ")";
+		return this.nome + " (NUSP " + this.numeroUSP + ")";
 	}
 
 	@Override
