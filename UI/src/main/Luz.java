@@ -25,7 +25,7 @@ public class Luz extends JFrame {
 	private int serverPort;
 
 	public Luz(String serverAddr, int serverPort) {
-
+		
 		this.serverAddr = serverAddr;
 		this.serverPort = serverPort;
 
@@ -73,7 +73,6 @@ public class Luz extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				new Interface().setVisible(true);
 			}
 		});
 

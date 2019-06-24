@@ -49,7 +49,6 @@ public class Projetor extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				new Interface().setVisible(true);
 			}
 		});
 		btnNewButton.setBounds(12, 195, 170, 25);
