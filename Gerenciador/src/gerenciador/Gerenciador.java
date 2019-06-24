@@ -66,11 +66,11 @@ public class Gerenciador {
 				s = socket.accept();
 				if(s != null) {
 					t = new GerenciadorThread(s, this);
-					System.out.println("Requisição: " + t.getHostAddress() + ":" + t.getPort());
+					System.out.println("Requisicao: " + t.getHostAddress() + ":" + t.getPort());
 					t.run();
 				}
 			} catch(IOException ex) {
-				System.err.println("Alguém tentou conectar aqui no servidor, mas não deu certo. :(");
+				System.err.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
 				System.err.println(ex);
 				ex.printStackTrace();
 			}

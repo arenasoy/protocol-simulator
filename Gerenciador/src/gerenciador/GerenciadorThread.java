@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +43,7 @@ public class GerenciadorThread extends Thread {
 		try {
 			this.main.mutex.acquire();
 		} catch(InterruptedException ex) {
-			System.err.println("A requisição não pode ser processada. Algum erro ocorreu com a thread. :(");
+			System.err.println("A requisicao nao pode ser processada. Algum erro ocorreu com a thread. :(");
 			System.err.println(ex);
 			ex.printStackTrace();
 			return;
@@ -119,10 +120,10 @@ public class GerenciadorThread extends Thread {
 					}
 					break;
 				case "DETECTED": // Sensor de presenca
-					saida = null; // não tem resposta pro sensor de presenca.
+					saida = null; // nao tem resposta pro sensor de presenca.
 					break;
 				case "READ": // Leitor de cartao
-					m = Pattern.compile("^[0-9]+\\s+.+$", Pattern.DOTALL).matcher(entrada.getBody());
+					m = Pattern.compile("^([0-9]+)\\s+(.+)$", Pattern.DOTALL).matcher(entrada.getBody());
 					if(!m.matches()) {
 						saida.setBody("0");
 						break;
@@ -142,19 +143,19 @@ public class GerenciadorThread extends Thread {
 					this.main.listaPresenca.add(u);
 					break;
 				case "ON": // Chave projetor
-					saida = null; // não tem resposta pra chave do projetor.
+					saida = null; // nao tem resposta pra chave do projetor.
 					try {
 						if(main.alimentadorProjetor != null) {
 							new Message("GERENCIADOR", "ON", "").send(main.alimentadorProjetor.getAddress(), main.alimentadorProjetor.getPort());
 						}
 					} catch(IOException exc) {
-						System.err.println("Falha ao estabelecer comunicação com o alimentador do projetor. :O");
+						System.err.println("Falha ao estabelecer comunicacao com o alimentador do projetor. :O");
 						System.err.println(exc);
 						exc.printStackTrace();
 					}
 					break;
 				case "OFF":
-					saida = null; // não tem resposta pra chave do projetor.
+					saida = null; // nao tem resposta pra chave do projetor.
 					try {
 						if(main.alimentadorProjetor != null) {
 							new Message("GERENCIADOR", "OFF", "").send(main.alimentadorProjetor.getAddress(), main.alimentadorProjetor.getPort());
@@ -168,10 +169,11 @@ public class GerenciadorThread extends Thread {
 				case "LISTA":
 					s = "";
 					if(this.main.professor == null) {
-						System.out.println("Não tem ninguém na lista de presença porque nenhum outro professor registrou presença antes! (número usp de professor = 1...10)");
+						System.out.println("Nao tem ninguem na lista de presenca porque nenhum outro professor registrou presenca antes! (numero usp de professor = 1...10)");
 					} else {
+						Collections.sort(this.main.listaPresenca); // Ordena a lista de chamada
 						for(i = 0; i < this.main.listaPresenca.size(); i++) {
-							s += this.main.listaPresenca.get(i).toString();
+							s += this.main.listaPresenca.get(i).toString() + System.lineSeparator();
 						}
 					}
 					s = s.trim();
@@ -179,7 +181,7 @@ public class GerenciadorThread extends Thread {
 					break;
 				case "SET_TEMP":
 					if(this.main.alimentadorAr == null) {
-						saida.setBody("Erro: o alimentador do ar-condicionado não está conectado ao gerenciador!");
+						saida.setBody("Erro: o alimentador do ar-condicionado nao esta� conectado ao gerenciador!");
 						break;
 					}
 					try {
@@ -213,7 +215,7 @@ public class GerenciadorThread extends Thread {
 							if(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody().equals("1")) {
 								saida.setBody("Ar-condicionado ligado com sucesso.");
 							} else {
-								saida.setBody("Não foi possível ligar o ar-condicionado.");
+								saida.setBody("Nao foi possivel ligar o ar-condicionado.");
 							}
 						} catch(Exception exc) {
 							saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
@@ -228,7 +230,7 @@ public class GerenciadorThread extends Thread {
 							if(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody().equals("1")) {
 								saida.setBody("Ar-condicionado desligado com sucesso.");
 							} else {
-								saida.setBody("Não foi possível desligar o ar-condicionado.");
+								saida.setBody("Nao foi possivel desligar o ar-condicionado.");
 							}
 						} catch(Exception exc) {
 							saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
@@ -267,7 +269,7 @@ public class GerenciadorThread extends Thread {
 			}
 			socket.close();
 		} catch (Exception ex) {
-			System.err.println("A requisição não pode ser processada. :(");
+			System.err.println("A requisicao nao pode ser processada. :(");
 			System.err.println(ex);
 			ex.printStackTrace();
 		}

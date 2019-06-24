@@ -16,21 +16,11 @@ public class Main {
 		Console c;
 		Matcher m;
 		String s;
-		int p;
 
 		c = Console.getInstance();
 
 		System.out.println("Bem-vinde ao Leitor de Cartao.");
 		System.out.println();
-
-		do {
-			p = c.readInt("Em qual porta o servidor do leitor de cartao deve iniciar? (recomendado = 9001-9999)");
-
-			if (p < 1 || p > 65535) {
-				System.out
-						.println("Porta invalida! Deve ser um valor entre 1-65535.");
-			}
-		} while (p < 1 || p > 65535);
 
 		do {
 			s = c.readLine("E qual o endereco do servidor do gerenciador? (formato = endereco:porta)");
@@ -42,9 +32,8 @@ public class Main {
 		} while (s == null || !m.matches());
 
 		try {
-			l = new Leitor(m.group(1).trim(), Integer.parseInt(m.group(2)), p);
-			System.out.println("O servidor esta hospedado em: "
-					+ l.getHostAddress() + ":" + l.getPort());
+			l = new Leitor(m.group(1).trim(), Integer.parseInt(m.group(2)));
+			System.out.println("Conectado ao servidor do gerenciador.");
 			l.execute();
 		} catch (Exception ex) {
 			System.err.println("Nao foi possivel iniciar o servidor. :(");

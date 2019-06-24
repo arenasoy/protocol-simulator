@@ -21,16 +21,16 @@ public class Main {
 		do {
 			p = c.readInt("Em qual porta o servidor do gerenciador deve iniciar? (recomendado = 9000)");
 			if (p < 1 || p > 65535) {
-				System.out.println("Porta inválida! Deve ser um valor entre 1-65535.");
+				System.out.println("Porta invalida! Deve ser um valor entre 1-65535.");
 			}
 		} while(p < 1 || p > 65535);
 
 		try {
 			g = new Gerenciador(p);
-			System.out.println("O servidor está hospedado em: " + g.getHostAddress() + ":" + g.getPort());
+			System.out.println("O servidor esta hospedado em: " + g.getHostAddress() + ":" + g.getPort());
 			g.execute();
 		} catch(IOException ex) {
-			System.err.println("Não foi possível iniciar o servidor. :(");
+			System.err.println("Nao foi possivel iniciar o servidor. :(");
 			System.err.println(ex);
 			ex.printStackTrace();
 		}
