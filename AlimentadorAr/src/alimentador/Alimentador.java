@@ -119,7 +119,7 @@ public class Alimentador {
 				outputStream.write(saida.toString());
 				outputStream.flush();
 				s.close();
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				System.err
 						.println("Alguem tentou conectar aqui no servidor, mas nao deu certo. :(");
 				System.err.println(ex);

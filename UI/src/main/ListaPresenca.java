@@ -6,9 +6,9 @@ import java.awt.event.WindowListener;
 
 public class ListaPresenca extends JFrame implements WindowListener {
 
-	private JFrame parent;
+	private Interface parent;
 
-	public ListaPresenca(JFrame parent) {
+	public ListaPresenca(Interface parent) {
 		setSize(600, 600);
 		setTitle("Lista de presenca");
 		addWindowListener(this);

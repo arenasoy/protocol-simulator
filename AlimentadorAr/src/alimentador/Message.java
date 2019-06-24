@@ -129,6 +129,7 @@ public class Message {
 			input += l;
 		}
 
+		System.out.println("Enttrada: " + input);
 		return new Message(input);
 	}
 

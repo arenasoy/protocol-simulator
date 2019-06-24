@@ -142,6 +142,7 @@ public class Message {
 
 		s = new BufferedWriter(new OutputStreamWriter(sendingSocket.getOutputStream(), "UTF-8"));
 		s.write(this.toString());
+		s.flush();
 		sendingSocket.shutdownOutput();
 
 		r = new BufferedReader(new InputStreamReader(sendingSocket.getInputStream(), "UTF-8"));

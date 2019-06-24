@@ -205,25 +205,25 @@ public class GerenciadorThread extends Thread {
 						break;
 					}
 					try {
-						if(new Message(new Message("GERENCIADOR", "GET_TEMP", "").send(this.main.alimentadorAr.getAddress(), this.main.alimentadorAr.getPort())).getBody().equals("1")) {
+						if(new Message(new Message("GERENCIADOR", "SET_TEMP", entrada.getBody()).send(this.main.alimentadorAr.getAddress(), this.main.alimentadorAr.getPort())).getBody().equals("1")) {
 							saida.setBody("Temperatura alterada com sucesso.");
 						} else {
-							saida.setBody("Erro: o alimentador do ar-condicionado não permitiu vocẽ mudar a temperatura por algum motivo! O ar-condicionado tá ligado?");
+							saida.setBody("Erro: o alimentador do ar-condicionado nao permitiu voce mudar a temperatura por algum motivo! O ar-condicionado ta ligado?");
 						}
-					} catch(IOException exc) {
-						saida.setBody("Erro: não foi possível conectar ao alimentador do ar-condicionado.");
+					} catch(Exception exc) {
+						saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
 						break;
 					}
 					break;
 				case "GET_TEMP":
 					if(this.main.alimentadorAr == null) {
-						saida.setBody("Erro: o alimentador do ar-condicionado não está conectado ao gerenciador!");
+						saida.setBody("Erro: o alimentador do ar-condicionado nao esta conectado ao gerenciador!");
 						break;
 					}
 					try {
 						saida.setBody("Temperatura: " + new Message(new Message("GERENCIADOR", "GET_TEMP", "").send(this.main.alimentadorAr.getAddress(), this.main.alimentadorAr.getPort())).getBody() + "ºC");
-					} catch(IOException exc) {
-						saida.setBody("Erro: não foi possível conectar ao alimentador do ar-condicionado.");
+					} catch(Exception exc) {
+						saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
 						break;
 					}
 					break;
@@ -234,7 +234,7 @@ public class GerenciadorThread extends Thread {
 				outputStream.flush();
 			}
 			socket.close();
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			System.err.println("A requisição não pode ser processada. :(");
 			System.err.println(ex);
 			ex.printStackTrace();
