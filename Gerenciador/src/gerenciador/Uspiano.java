@@ -2,8 +2,8 @@ package gerenciador;
 
 public class Uspiano implements Comparable<Uspiano> {
 
-	int numeroUSP;
-	String nome;
+	private int numeroUSP;
+	private String nome;
 
 	public Uspiano(int nUsp, String nome) {
 		if(nome == null) {

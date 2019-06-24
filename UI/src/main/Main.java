@@ -3,8 +3,8 @@ package main;
 public class Main {
 	
 	public static void main(String[] args) {
-	
-		new Interface().setVisible(true);;
+		System.out.println("Iniciando interface grafica...");
+		new Interface().setVisible(true);
 	}
 	
 }

@@ -1,9 +1,10 @@
 package main;
 
-import console.Console;
 import gerenciador.Gerenciador;
 
 import java.io.IOException;
+
+import console.Console;
 
 public class Main {
 

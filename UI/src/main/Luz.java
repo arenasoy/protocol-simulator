@@ -16,11 +16,19 @@ import javax.swing.text.NumberFormatter;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 
+import message.Message;
+
 public class Luz extends JFrame {
 	
 	private JTextField fileira;
+	private String serverAddr;
+	private int serverPort;
 	
-	public Luz() {
+	public Luz(String serverAddr, int serverPort) {
+		
+		this.serverAddr = serverAddr;
+		this.serverPort = serverPort;
+		
 		setResizable(false);
 		setSize(325, 300);
 		
@@ -90,9 +98,27 @@ public class Luz extends JFrame {
 				}
 				
 				if (rdbtnAcender.isSelected()) {
-					System.out.println("acender " + n);
+					
+					try {
+						String result = new Message(new Message("INTERFACE_CLIENTE", "LUZON", fileira.getText()).send(serverAddr, serverPort)).getBody();
+						JOptionPane.showMessageDialog(null, (result.equals("1") ? "Fileira foi ligada" : "Nao foi possivel ligar a fileira"));
+					} catch(Exception exc) {
+						JOptionPane.showMessageDialog(null, "Nao foi possivel enviar solicitacao");
+						System.err.println(exc);
+						exc.printStackTrace();
+						System.exit(1);
+					}
+					
 				} else if (rdbtnApagar.isSelected()) {
-					System.out.println("apagar " + n);
+					try {
+						String result = new Message(new Message("INTERFACE_CLIENTE", "LUZOFF", fileira.getText()).send(serverAddr, serverPort)).getBody();
+						JOptionPane.showMessageDialog(null, (result.equals("1") ? "Fileira foi desligada" : "Nao foi possivel desligar a fileira"));
+					} catch(Exception exc) {
+						JOptionPane.showMessageDialog(null, "Nao foi possivel enviar solicitacao");
+						System.err.println(exc);
+						exc.printStackTrace();
+						System.exit(1);
+					}
 				}
 				
 			}
