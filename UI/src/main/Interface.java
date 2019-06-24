@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,7 +15,7 @@ import java.util.regex.Pattern;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class Interface extends JFrame implements ActionListener {
+public class Interface extends JFrame implements ActionListener, WindowListener {
 
 	private static final String ADDR_REGEX = "^\\s*([^:]+):([0-9]+)\\s*$";
 	private static final Pattern ADDR_PATTERN = Pattern.compile(ADDR_REGEX);
@@ -71,12 +73,13 @@ public class Interface extends JFrame implements ActionListener {
 			System.exit(1);
 		}
 
-		setSize(600, 600);
+		setSize(430, 300);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height
 				/ 2 - this.getSize().height / 2);
 
 		getContentPane().setLayout(null);
+		setResizable(false);
 
 		setTitle("Gerenciador");
 
@@ -101,6 +104,8 @@ public class Interface extends JFrame implements ActionListener {
 		btnLuz.setBounds(267, 138, 153, 102);
 		getContentPane().add(btnLuz);
 
+		this.addWindowListener(this);
+
 	}
 
 	@Override
@@ -117,6 +122,22 @@ public class Interface extends JFrame implements ActionListener {
 		} else if (src == btnLuz) {
 			new Luz(serverAddr, serverPort).setVisible(true);
 		}
+	}
 
+	public void windowClosing(WindowEvent e) {
+		System.exit(0);
+	}
+
+	public void windowOpened(WindowEvent e) {
+	}
+	public void windowClosed(WindowEvent e) {
+	}
+	public void windowIconified(WindowEvent e) {
+	}
+	public void windowDeiconified(WindowEvent e) {
+	}
+	public void windowActivated(WindowEvent e) {
+	}
+	public void windowDeactivated(WindowEvent e) {
 	}
 }

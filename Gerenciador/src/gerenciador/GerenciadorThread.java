@@ -114,28 +114,6 @@ public class GerenciadorThread extends Thread {
 						case "INTERFACE_CLIENTE":
 							saida.setBody("1");
 							break;
-						case "LUZON":
-							if(main.alimentadorLuzes == null) {
-								saida.setBody("0");
-							} else {
-								try {
-									saida.setBody(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody());
-								} catch(Exception exc) {
-									saida.setBody("0"); // Ele caiu! Reconectado.
-								}
-							}
-							break;
-						case "LUZOFF":
-							if(main.alimentadorLuzes == null) {
-								saida.setBody("0");
-							} else {
-								try {
-									saida.setBody(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody());
-								} catch(Exception exc) {
-									saida.setBody("0"); // Ele caiu! Reconectado.
-								}
-							}
-							break;
 						default:
 							saida.setBody("0");
 					}
@@ -227,6 +205,60 @@ public class GerenciadorThread extends Thread {
 						break;
 					}
 					break;
+				case "ARON":
+					if(main.alimentadorAr == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							if(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody().equals("1")) {
+								saida.setBody("Ar-condicionado ligado com sucesso.");
+							} else {
+								saida.setBody("Não foi possível ligar o ar-condicionado.");
+							}
+						} catch(Exception exc) {
+							saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
+						}
+					}
+					break;
+				case "AROFF":
+					if(main.alimentadorAr == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							if(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorAr.getAddress(), main.alimentadorAr.getPort())).getBody().equals("1")) {
+								saida.setBody("Ar-condicionado desligado com sucesso.");
+							} else {
+								saida.setBody("Não foi possível desligar o ar-condicionado.");
+							}
+						} catch(Exception exc) {
+							saida.setBody("Erro: nao foi possivel conectar ao alimentador do ar-condicionado.");
+						}
+					}
+					break;
+				case "LUZON":
+					if(main.alimentadorLuzes == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							saida.setBody(new Message(new Message("GERENCIADOR", "ON", entrada.getBody()).send(main.alimentadorLuzes.getAddress(), main.alimentadorLuzes.getPort())).getBody());
+						} catch(Exception exc) {
+							saida.setBody("0");
+						}
+					}
+					break;
+				case "LUZOFF":
+					if(main.alimentadorLuzes == null) {
+						saida.setBody("0");
+					} else {
+						try {
+							saida.setBody(new Message(new Message("GERENCIADOR", "OFF", entrada.getBody()).send(main.alimentadorLuzes.getAddress(), main.alimentadorLuzes.getPort())).getBody());
+						} catch(Exception exc) {
+							saida.setBody("0");
+						}
+					}
+					break;
+				default:
+					saida = null;
 			}
 			if(saida != null) {
 				outputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
